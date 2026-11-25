@@ -1,0 +1,51 @@
+# Deployment helper scripts (contain credentials — never commit)
+git_push.bat
+fresh_push.bat
+fresh_push.bat
+# Exclude all bat files except run.bat
+*_push.bat
+*_upload.bat
+*_login.bat
+
+# ============================================================
+# Large model & dataset files — hosted on Hugging Face Hub
+# Download them with:  python download_models.py
+# ============================================================
+models/
+dataset/
+
+# ============================================================
+# Python
+# ============================================================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# ============================================================
+# Jupyter
+# ============================================================
+.ipynb_checkpoints/
+notebooks/
+
+# ============================================================
+# OS / Editor
+# ============================================================
+.DS_Store
+Thumbs.db
+desktop.ini
+.idea/
+.vscode/
+*.swp
+*.swo
