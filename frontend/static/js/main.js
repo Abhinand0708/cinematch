@@ -93,7 +93,8 @@ function escapeHtml(text) {
   return d.innerHTML;
 }
 
-function scrollTo(el, offset = 80) {
+function scrollToElement(el, offset = 80) {
+  if (!el || typeof el.getBoundingClientRect !== "function") return;
   const top = el.getBoundingClientRect().top + window.scrollY - offset;
   window.scrollTo({ top, behavior: "smooth" });
 }
@@ -396,7 +397,7 @@ async function selectMovie(movieId, movieTitleText) {
   hide(welcomeSection);
 
   // Scroll to movie details section
-  scrollTo(movieDetailsSection, 70);
+  scrollToElement(movieDetailsSection, 70);
 
   // Dim existing rec cards while loading new ones
   recsGrid.querySelectorAll(".rec-card").forEach((c) => {
