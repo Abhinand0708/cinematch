@@ -115,6 +115,7 @@ function renderSuggestions(results) {
 
   if (!results || results.length === 0) {
     active(suggestionsEmpty);
+    openDropdown();
     return;
   }
   inactive(suggestionsEmpty);
@@ -196,11 +197,13 @@ async function loadMovieDetails(movieId) {
   show(movieDetailsSection);
   hide(welcomeSection);
 
-  inactive(detailsError);
+  // Reset states
+  hide(detailsError);
   hide(movieCard);
-  active(detailsLoading);
 
-  scrollTo(movieDetailsSection);
+  // Show loading spinner
+  show(detailsLoading);
+  detailsLoading.style.display = "flex";
 
   try {
     const res = await fetch(API.movie(movieId));
@@ -208,13 +211,17 @@ async function loadMovieDetails(movieId) {
     renderMovieDetails(await res.json());
   } catch (err) {
     console.error("Movie details error:", err);
-    inactive(detailsLoading);
-    active(detailsError);
+    hide(detailsLoading);
+    detailsLoading.style.display = "";
+    show(detailsError);
+    detailsError.style.display = "flex";
   }
 }
 
 function renderMovieDetails(data) {
-  inactive(detailsLoading);
+  // Hide loading
+  hide(detailsLoading);
+  detailsLoading.style.display = "";
 
   // Poster
   const posterUrl = safeText(data.poster_url);
@@ -294,11 +301,13 @@ async function loadRecommendations(movieId, titleText) {
   show(recommendationsSection);
   recsSubtitle.textContent = `Based on "${titleText}"`;
 
-  inactive(recsError);
+  hide(recsError);
   recsGrid.innerHTML = "";
-  active(recsLoading);
 
-  // Update loading message to manage expectations (recs take ~15s)
+  // Show loading spinner
+  show(recsLoading);
+  recsLoading.style.display = "flex";
+
   const loadingP = recsLoading.querySelector("p");
   if (loadingP) loadingP.textContent = "Generating AI recommendations…";
 
@@ -306,14 +315,15 @@ async function loadRecommendations(movieId, titleText) {
     const res = await fetch(API.recs(movieId));
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const data = await res.json();
-    inactive(recsLoading);
+    hide(recsLoading);
+    recsLoading.style.display = "";
     renderRecommendations(data.recommendations || []);
-    // Scroll to recommendations after they load
-    scrollTo(recommendationsSection);
   } catch (err) {
     console.error("Recommendations error:", err);
-    inactive(recsLoading);
-    active(recsError);
+    hide(recsLoading);
+    recsLoading.style.display = "";
+    show(recsError);
+    recsError.style.display = "flex";
   }
 }
 
@@ -380,17 +390,26 @@ async function selectMovie(movieId, movieTitleText) {
   searchClear.classList.add("visible");
   closeDropdown();
 
+  // Scroll to top of movie details section immediately
+  scrollTo(movieDetailsSection, 70);
+
   // Dim existing rec cards while loading new ones
   recsGrid.querySelectorAll(".rec-card").forEach((c) => {
     c.style.opacity = "0.4";
     c.style.pointerEvents = "none";
   });
 
+  // Hide current movie card with a fade so user sees something is changing
+  movieCard.style.opacity = "0.3";
+
   // Load details and recommendations in parallel
   await Promise.all([
     loadMovieDetails(movieId),
     loadRecommendations(movieId, movieTitleText || "this movie"),
   ]);
+
+  // Restore opacity (new content is rendered)
+  movieCard.style.opacity = "1";
 
   // Reset block on same-movie re-click
   currentMovieId = movieId;
