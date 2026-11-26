@@ -390,7 +390,12 @@ async function selectMovie(movieId, movieTitleText) {
   searchClear.classList.add("visible");
   closeDropdown();
 
-  // Scroll to top of movie details section immediately
+  // Show sections immediately so scroll works
+  show(movieDetailsSection);
+  show(recommendationsSection);
+  hide(welcomeSection);
+
+  // Scroll to movie details section
   scrollTo(movieDetailsSection, 70);
 
   // Dim existing rec cards while loading new ones
@@ -399,7 +404,7 @@ async function selectMovie(movieId, movieTitleText) {
     c.style.pointerEvents = "none";
   });
 
-  // Hide current movie card with a fade so user sees something is changing
+  // Fade current movie card
   movieCard.style.opacity = "0.3";
 
   // Load details and recommendations in parallel
@@ -408,10 +413,10 @@ async function selectMovie(movieId, movieTitleText) {
     loadRecommendations(movieId, movieTitleText || "this movie"),
   ]);
 
-  // Restore opacity (new content is rendered)
+  // Restore opacity
   movieCard.style.opacity = "1";
 
-  // Reset block on same-movie re-click
+  // Allow same movie to be re-selected after load completes
   currentMovieId = movieId;
 }
 
