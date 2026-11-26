@@ -36,8 +36,10 @@ from sentence_transformers import SentenceTransformer
 # ---------------------------------------------------------------------------
 
 _HERE         = os.path.dirname(os.path.abspath(__file__))
-_MODELS_DIR   = os.path.join(_HERE, "..", "models")
-_DATASET_DIR  = os.path.join(_HERE, "..", "dataset")
+
+# Allow overriding via environment variables (used in Colab deployment)
+_MODELS_DIR   = os.environ.get("MODELS_DIR",  os.path.join(_HERE, "..", "models"))
+_DATASET_DIR  = os.environ.get("DATASET_DIR", os.path.join(_HERE, "..", "dataset"))
 
 
 def _path(directory: str, filename: str) -> str:

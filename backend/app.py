@@ -73,10 +73,12 @@ CORS(app)   # allow requests from any origin during development
 
 # ---------------------------------------------------------------------------
 # Load ML models once at startup (before the first request is served)
+# Skip if already loaded externally (e.g. Colab deployment)
 # ---------------------------------------------------------------------------
 
 with app.app_context():
-    model_loader.initialise()
+    if model_loader._MODELS is None:
+        model_loader.initialise()
 
 
 # ---------------------------------------------------------------------------
